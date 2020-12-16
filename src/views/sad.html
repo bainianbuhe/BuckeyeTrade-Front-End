@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>精美卡片排版</title>
+    <!-- 引入element样式 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/2.12.0/theme-chalk/index.css">
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            background: #f4f4f4;
+            font: 14px/1.5 Helvetica,Tahoma,Arial,Hiragino Sans GB,Microsoft YaHei,SimSun,Heiti,sans-serif
+        }
+        #app {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        .container {
+            width: 1240px;
+            margin: 0 auto;
+        }
+        .section-list h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .card-list {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .card-item {
+            width: 304px;
+            height: 388px;
+            background: #fff;
+            transition: all .3s ease;
+            cursor: pointer;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .card-item:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        .card-item .cover img {
+            width: 100%;
+        }
+        .card-item .info {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+        .card-item .info img {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #eee;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .card-item .desc {
+            padding: 10px 15px 15px;
+        }
+        .card-item .desc p {
+            font-size: 16px;
+            overflow : hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .card-item .desc span {
+            color: #999;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="container">
+        <div class="section-list" v-for="(section, sectionIndex) in sectionList">
+            <h3>{{ section.title }}</h3>
+            <div class="card-list">
+                <div class="card-item" v-for="(list, index) in section.list">
+                    <div class="cover">
+                        <img :src="list.imgUrl" :title="list.title" alt="" />
+                    </div>
+                    <div class="info">
+                        <img :src="list.author" :title="list.userName" alt=""/>
+                        <span>{{ list.userName }}</span>
+                    </div>
+                    <div class="desc">
+                        <p>{{ list.title }}</p>
+                        <span>{{ list.label }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 引入vue -->
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+<!-- 引入element组件库 -->
+<script src="https://cdn.bootcss.com/element-ui/2.12.0/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                sectionList: [
+                    {
+                        title: '社区热贴',
+                        list: [
+                            {
+                                imgUrl: 'https://fms.res.meizu.com/dms/2019/02/28/dc6c4a26-479e-40ea-bde2-3c0ed2024d1c.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/56/01/26/00/00/560126/w100h100?t=1578375125',
+                                userName: 'hooyeah',
+                                title: '魅族 Note9 邀请函 JK 服妹子出镜，谁才是最美游戏姬？',
+                                label: '魅族 Note9'
+                            },
+                            {
+                                imgUrl: 'https://fms.res.meizu.com/dms/2018/11/21/5574c92b-cdfd-440e-b964-615acde85648.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/16/02/09/10/00/1602091/w100h100?t=1578375125',
+                                userName: 'xrx3p',
+                                title: '摄影离不开适当的后期，好在如今你可以在魅族手机上轻松完成操作。',
+                                label: '摄影技巧'
+                            },
+                            {
+                                imgUrl: 'https://fms.res.meizu.com/dms/2018/12/28/1bac33ce-9307-4e7a-85d2-3d38beff2fd5.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/13/22/58/03/00/13225803/w100h100?t=1578375125',
+                                userName: '小墨灰',
+                                title: '工作和学习中的沟通总离不开邮件，而 Flyme 邮箱的出色体验为我们带来的不只是生产力。',
+                                label: '功能解析'
+                            },
+                            {
+                                imgUrl: 'https://fms.res.meizu.com/dms/2019/01/18/1c303ede-134e-4e4c-ba54-0cf4adf05dc6.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/49/87/80/40/00/4987804/w100h100?t=1578375125',
+                                userName: '屌丝扮海绵',
+                                title: '“窗含西岭千秋雪” 魅族 16th 用旗舰双摄带你领略诗句中的美景。',
+                                label: '魅族 16th'
+                            },
+                            {                            	imgUrl: 'https://fms.res.meizu.com/dms/2019/02/28/dc6c4a26-479e-40ea-bde2-3c0ed2024d1c.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/56/01/26/00/00/560126/w100h100?t=1578375125',
+                                userName: 'hooyeah',
+                                title: '魅族 Note9 邀请函 JK 服妹子出镜，谁才是最美游戏姬？',
+                                label: '魅族 Note9'
+                            },
+                            {
+                                imgUrl: 'https://fms.res.meizu.com/dms/2018/11/21/5574c92b-cdfd-440e-b964-615acde85648.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/16/02/09/10/00/1602091/w100h100?t=1578375125',
+                                userName: 'xrx3p',
+                                title: '摄影离不开适当的后期，好在如今你可以在魅族手机上轻松完成操作。',
+                                label: '摄影技巧'
+                            },
+                            {
+                                imgUrl: 'https://fms.res.meizu.com/dms/2018/12/28/1bac33ce-9307-4e7a-85d2-3d38beff2fd5.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/13/22/58/03/00/13225803/w100h100?t=1578375125',
+                                userName: '小墨灰',
+                                title: '工作和学习中的沟通总离不开邮件，而 Flyme 邮箱的出色体验为我们带来的不只是生产力。',
+                                label: '功能解析'
+                            },
+                            {
+                                imgUrl: 'https://fms.res.meizu.com/dms/2019/01/18/1c303ede-134e-4e4c-ba54-0cf4adf05dc6.jpg',
+                                author: 'https://img-res.mzres.com/img/download/uc/49/87/80/40/00/4987804/w100h100?t=1578375125',
+                                userName: '屌丝扮海绵',
+                                title: '“窗含西岭千秋雪” 魅族 16th 用旗舰双摄带你领略诗句中的美景。',
+                                label: '魅族 16th'
+                            },                        ]
+                    }
+                ]
+            }
+        }
+    })
+</script>
+</body>
+</html>

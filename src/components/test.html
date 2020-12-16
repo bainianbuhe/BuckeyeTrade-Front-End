@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>
+        test
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+
+<div id="app">
+    <div class="block" style="width: 237px">
+        <span class="demonstration">A test for moving pictures</span>
+        <el-carousel height="357px">
+            <el-carousel-item >
+                <img src="https://ieeegsb.osu.edu/sites/default/files/uploads/img_3666_1.jpg" width="237px" height="357px"/>
+            </el-carousel-item>
+            <el-carousel-item >
+                <img src="https://ieeegsb.osu.edu/sites/default/files/uploads/img_3660_1.jpg" width="237px" height="357px"/>
+            </el-carousel-item>
+            <el-carousel-item >
+                <img src="https://ieeegsb.osu.edu/sites/default/files/uploads/img_3657_1.jpg" width="237px" height="357px"/>
+            </el-carousel-item>
+        </el-carousel>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        data:{},
+        methods:{},
+        created:function(){},
+        mounted:function(){}
+    }).$mount('#app');;
+</script>
+<style>
+    .el-carousel__item h3 {
+        color: #475669;
+        font-size: 14px;
+        opacity: 0.75;
+        line-height: 150px;
+        margin: 0;
+    }
+
+    .el-carousel__item:nth-child(2n) {
+        background-color: #99a9bf;
+    }
+
+    .el-carousel__item:nth-child(2n+1) {
+        background-color: #d3dce6;
+    }
+</style>
+</html>

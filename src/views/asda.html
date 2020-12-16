@@ -1,0 +1,780 @@
+var appsMenuItems = document.querySelectorAll('#appmenu > li > a');
+var subMenuItems = document.querySelectorAll('#appmenu > li li > a');
+
+var keys = {
+tab: 9,
+enter: 13,
+esc: 27,
+space: 32,
+left: 37,
+up: 38,
+right: 39,
+down: 40
+};
+var currentIndex, subIndex;
+
+var gotoIndex = function (idx, enter, backward) {
+if (idx < 0) {
+currentIndex = 0;
+appsMenuItems[0].click();
+appsMenuItems[0].focus();
+return;
+}
+currentIndex = idx;
+if (enter) {
+var submenu = appsMenuItems[idx].parentElement.querySelector('ul');
+if(submenu == null) {
+appsMenuItems[idx].focus();
+} else {
+var items = submenu.querySelectorAll('li > a').length;
+appsMenuItems[idx].click();
+if (backward) {
+gotoSubIndex(submenu, items - 1);
+} else {
+gotoSubIndex(submenu, 0);
+}
+}
+} else {
+appsMenuItems[idx].focus();
+}
+};
+
+var gotoSubIndex = function (menu, idx) {
+var items = menu.querySelectorAll('li > a');
+if (idx == items.length) {
+idx = 0;
+//gotoIndex(currentIndex + 1, true, false);
+//return;
+} else if (idx < 0) {
+idx = items.length - 1;
+//gotoIndex(currentIndex - 1, true, true);
+//return;
+}
+items[idx].focus();
+subIndex = idx;
+}
+
+Array.prototype.forEach.call(appsMenuItems, function (el, i) {
+el.setAttribute('aria-posinset', i + 1);
+el.setAttribute('aria-setsize', appsMenuItems.length);
+if (0 == i) {
+el.setAttribute('tabindex', '0');
+el.addEventListener("focus", function () {
+currentIndex = 0;
+});
+} else {
+el.setAttribute('tabindex', '-1');
+}
+el.addEventListener("focus", function () {
+subIndex = 0;
+Array.prototype.forEach.call(appsMenuItems, function (el, i) {
+el.setAttribute('aria-expanded', "false");
+});
+});
+el.addEventListener("click", function (event) {
+if (this.getAttribute('aria-expanded') == 'false' || this.getAttribute('aria-expanded') == null) {
+this.setAttribute('aria-expanded', "true");
+} else {
+this.setAttribute('aria-expanded', "false");
+}
+//event.preventDefault();
+//return false;
+});
+el.addEventListener("keydown", function (event) {
+switch (event.keyCode) {
+case keys.right:
+if (currentIndex != appsMenuItems.length - 1) {
+gotoIndex(currentIndex + 1);
+}
+else {
+gotoIndex(0);
+}
+break;
+case keys.left:
+if (currentIndex != 0) {
+gotoIndex(currentIndex - 1);
+} else {
+gotoIndex(appsMenuItems.length - 1);
+}
+break;
+case keys.tab:
+if (event.shiftKey) {
+gotoIndex(currentIndex - 1);
+} else {
+gotoIndex(currentIndex + 1);
+}
+break;
+case keys.enter:
+this.click();
+break;
+case keys.down:
+this.click();
+subindex = 0;
+gotoSubIndex(this.parentElement.querySelector('ul'), 0);
+break;
+case keys.up:
+this.click();
+var submenu = this.parentElement.querySelector('ul');
+subindex = submenu.querySelectorAll('li > a').length ;
+gotoSubIndex(submenu, subindex);
+break;
+case keys.esc:
+//document.querySelector('#search-trigger').focus();
+document.querySelector('#search-field').focus();
+break;
+}
+event.preventDefault();
+});
+});
+
+Array.prototype.forEach.call(subMenuItems, function (el, i) {
+el.setAttribute('tabindex', '-1');
+el.setAttribute('aria-posinset', i + 1);
+el.setAttribute('aria-setsize', subMenuItems.length);
+el.addEventListener("keydown", function (event) {
+switch (event.keyCode) {
+case keys.tab:
+
+if (event.shiftKey) {
+var close = this.parentNode.parentNode.parentNode.querySelectorAll('a');
+close[0].click();
+gotoIndex(currentIndex - 1);
+} else {
+var close = this.parentNode.parentNode.parentNode.querySelectorAll('a');
+close[0].click();
+gotoIndex(currentIndex + 1);
+}
+
+//gotoSubIndex(this.parentNode.parentNode, subIndex + 1);
+break;
+case keys.right:
+var close = this.parentNode.parentNode.parentNode.querySelectorAll('a');
+close[0].click();
+gotoIndex(currentIndex + 1);
+break;
+case keys.left:
+var close = this.parentNode.parentNode.parentNode.querySelectorAll('a');
+close[0].click();
+gotoIndex(currentIndex - 1);
+break;
+case keys.esc:
+var close = this.parentNode.parentNode.parentNode.querySelectorAll('a');
+close[0].click();
+gotoIndex(currentIndex);
+break;
+case keys.down:
+gotoSubIndex(this.parentNode.parentNode, subIndex + 1);
+break;
+case keys.up:
+gotoSubIndex(this.parentNode.parentNode, subIndex - 1);
+break;
+case keys.enter:
+this.click();
+case keys.space:
+this.click();
+break;
+}
+event.preventDefault();
+event.stopPropagation();
+return false;
+});
+el.addEventListener("click", function (event) {
+});
+});
+var ua = (function () {
+
+//Navigation toggle
+var $searchForm;
+var $nav;
+var $studentSele;
+var $footer;
+
+var is_touch_device = ("ontouchstart" in window) || window.DocumentTouch && document instanceof DocumentTouch;
+
+
+var init = function () {
+// Save selectors
+$searchForm = $('.wrap-search-form');  // save selector
+$nav = $('#wrap-navigation');
+$footer = $("#stickyFooter");
+$('.js-activated').dropdownHover().dropdown();
+$('.col-eq').colequalizer();
+$('.print').click(function () {
+window.focus();
+window.print();
+});
+};
+
+var searchInit = function () {
+var $form = $('#search-form');
+
+if ($form.length > 0) {
+var $q = $form.find('input[name=q]');
+$form.on('submit', function (e) {
+return ($q.val() != '');
+});
+}
+};
+
+var mobileNavigation = function () {
+
+$('.navbar-toggle').on('click', function (e) {
+if ($(this).hasClass('collapsed')) {
+$(this).find('span').html('Close Menu');
+}
+else {
+$(this).find('span').html('Menu');
+}
+});
+
+$('#global-menu').on('shown.bs.collapse', function () {
+var $active = $('#global-menu .dropdown.active');
+if ($active.length > 0) {
+$.scrollTo($active, {
+duration: 1000,
+interrupt: true,
+onAfter: function (anchor, settings) {
+var $toggle = $active.find('.dropdown-toggle');
+if (!$active.hasClass('open')) {
+$toggle.dropdown('toggle');
+}
+}
+});
+}
+});
+
+};
+
+var desktopNavigation = function () {
+
+// remove handlers
+$('#global-menu').off('shown.bs.collapse');
+
+$('.nav-toggle-search').on('click', function (e) {
+e.preventDefault();
+$(this).toggleClass('fa-search fa-close');
+$('.wrap-search-form').toggleClass('show-search');
+});
+
+resizeHeader();
+
+$(window).on('resize', function () {
+resizeHeader();
+});
+
+};
+
+var majorsTool = function () {
+
+Vue.filter('by-school', function (values, input) {
+var cleanInputs = [];
+if (input.length == 0) {
+return values;
+}
+for (var i in input) {
+cleanInputs.push(input[i].replace(/ /g,''));
+}
+var result = [];
+for (var v in values) {
+var major = values[v];
+if(_.intersection(major.Campuses, cleanInputs).length != 0)
+{
+result.push(major);
+}
+}
+return result;
+//console.log(value)
+})
+Vue.filter('by-program', function (values, input) {
+var cleanInputs = [];
+console.log(input);
+if (input.length == 0)
+{
+return values;
+}
+for (var i in input) {
+cleanInputs.push(input[i].replace(/ /g, ''));
+}
+var result = [];
+for (var v in values) {
+var major = values[v];
+if (_.intersection(major.Schools, cleanInputs).length != 0) {
+result.push(major);
+}
+}
+return result;
+//console.log(value)
+})
+
+Vue.filter('by-program-degree-campus', function (values, program, degree, campus) {
+var cleanProgram = [];
+var cleanDegree = [];
+var cleanCampus = [];
+
+var checkProgram = (program.length === 0);
+var checkDegree = (degree.length === 0);
+var checkCampus = (campus.length === 0);
+
+
+if (checkProgram && checkDegree && checkCampus) {
+setTimeout(function () {
+$('.stacktable.small-only').remove();
+$('.primary table').removeClass('stacktable large-only'); //Maybe a little much, but just to be on the safe side.
+$('.primary table').stacktable();
+}, 100)
+return values;
+}
+for (var i in program) {
+cleanProgram.push(program[i].replace(/ /g, ''));
+}
+for (var i in degree) {
+cleanDegree.push(degree[i].replace(/ /g, ''));
+}
+for (var i in campus) {
+cleanCampus.push(campus[i].replace(/ /g, ''));
+}
+
+//double check programs
+for (var c in cleanProgram) {
+var item = cleanProgram[c];
+var itemSplit = item.split(",");
+if (itemSplit.length == 2) {
+var index = cleanProgram.indexOf(item);
+if (index > -1) {
+cleanProgram.splice(index, 1);
+cleanProgram.push(itemSplit[1]);
+}
+}
+}
+
+var result = [];
+for (var v in values) {
+var major = values[v];
+var matchProgram = _.intersection(major.Schools, cleanProgram).length != 0;
+var matchDegree = _.intersection(major.Degrees, cleanDegree).length != 0;
+var matchCampus = _.intersection(major.Campuses, cleanCampus).length != 0;
+
+if (!checkCampus && !checkDegree && !checkProgram)
+{
+if (matchProgram && matchDegree && matchCampus) {
+result.push(major);
+}
+}
+else if (!checkDegree && !checkCampus)
+{
+if (matchDegree && matchCampus) {
+result.push(major);
+}
+}
+else if (!checkDegree && !checkProgram)
+{
+if (matchProgram && matchDegree) {
+result.push(major);
+}
+}
+else if (!checkProgram && !checkCampus)
+{
+if (matchProgram && matchCampus) {
+result.push(major);
+}
+}
+else if (!checkProgram)
+{
+if (matchProgram) {
+result.push(major);
+}
+}
+else if (!checkCampus)
+{
+if (matchCampus) {
+result.push(major);
+}
+}
+else if (!checkDegree)
+{
+if (matchDegree) {
+result.push(major);
+}
+}
+
+}
+
+setTimeout(function() {
+$('.stacktable.small-only').remove();
+$('.primary table')
+.removeClass('stacktable large-only'); //Maybe a little much, but just to be on the safe side.
+$('.primary table').stacktable();
+},
+100);
+
+var allFilters = program.concat(degree, campus);
+
+$("#majorFilterUpdate").html("").append("<span>Majors have been filtered to " +
+                result.length +
+                " with these filters applied " + allFilters.join(', ') + ". Press enter to get to results.</span>");
+
+return result;
+})
+
+Vue.filter('weighted-search', function (values, input) {
+if (input == "") {
+return values;
+}
+var result = [];
+var re = new RegExp(input, "gi");
+for (var v in values) {
+var major = values[v];
+var titleResult = major.Name.match(re);
+var previewResult = major.Preview.match(re);
+var keywordResult = null;
+if (major.Keyword != null) {
+keywordResult = major.Keyword.match(re);
+}
+if(titleResult != null || previewResult != null || keywordResult != null)
+{
+var weight = 0;
+if (titleResult != null)
+{
+weight += titleResult.length * 300;
+}
+if (previewResult != null)
+{
+weight += previewResult.length * 200;
+}
+if (keywordResult != null)
+{
+weight += keywordResult.length * 100;
+}
+major.weight = weight;
+result.push(major);
+}
+}
+
+result = _.sortBy(result, function (o) { return -o.weight });
+$("#majorFilterUpdate").html("").append("<span>Majors have been filtered to " +
+                result.length +
+                ". Press enter to get to results.</span>");
+return result;
+})
+new Vue({
+el: '#majorsTool',
+data: function() {
+return {
+majors: null,
+campuses: null,
+programs: null,
+degrees: null,
+name: '',
+selectedCampuses: [],
+selectedPrograms: [],
+selectedDegrees: [],
+selectedLayout: 'block',
+url: majorToolUrl,
+programsOne: null,
+programsTwo: null
+};
+},
+events: {
+'autocomplete:selected': function (name, data) {
+window.location = location.protocol + '//' + location.host + location.pathname + '/detail/' + data.Id;
+},
+'autocomplete:showAll': function (name, term) {
+window.location = this.url + "?search=" + term + "&showAll=true";
+}
+},
+ready: function () {
+//setup grid
+
+var showAll = this.getParameterByName("showAll");
+var quickSearch = this.getParameterByName("search");
+
+if (quickSearch == null || quickSearch == "") {
+this.name = "";
+} else {
+this.name = quickSearch;
+}
+
+if (showAll) {
+// GET request
+this.$http({ url: '/api/majors/searchmajors/term/' + quickSearch + '/session/' +sessionId, method: 'GET' }).then(function (response) {
+// success callback
+this.$set('majors', response.data);
+setTimeout(function () {
+$('.primary table').stacktable();
+}, 500);
+$('.grid').masonry({
+// options
+itemSelector: '.grid-item',
+columnWidth: 200
+});
+
+//add here
+$("#majorFilterUpdate").html("").append("<span>Majors have been filtered to " + response.data.length + ". Press enter to get to results.</span>");
+
+}, function (response) {
+// error callback
+});
+$('html, body').animate({
+scrollTop: $(".grid").offset().top
+}, 500);
+} else {
+// GET request
+this.$http({ url: '/api/majors/getallmajorspreview/session/' + sessionId, method: 'GET' }).then(function (response) {
+// success callback
+this.$set('majors', response.data);
+setTimeout(function () {
+$('.primary table').stacktable();
+}, 500);
+$('.grid').masonry({
+// options
+itemSelector: '.grid-item',
+columnWidth: 200
+});
+}, function (response) {
+// error callback
+console.log(response.data)
+});
+}
+
+this.$http({ url: '/api/majors/getallcampuses/session/' + sessionId, method: 'GET' }).then(function (response) {
+// success callback
+var campus = this.getParameterByName("campus");
+this.$set('campuses', response.data)
+if (campus == "" || campus == null) {
+} else {
+this.$data.selectedCampuses.push(campus);
+}
+}, function (response) {
+
+});
+
+this.$http({ url: '/api/majors/getallprograms/session/' + sessionId, method: 'GET' }).then(function (response) {
+// success callback
+var program = this.getParameterByName("program");
+var half = Math.ceil(response.data.length / 2);
+this.$set('programs', response.data)
+this.$set('programsOne', response.data.splice(0, half));
+this.$set('programsTwo', response.data);
+if (program == "" || program == null) {
+} else {
+this.$data.selectedPrograms.push(program);
+}
+}, function (response) {
+
+});
+
+this.$http({ url: '/api/majors/getalldegrees/session/' + sessionId, method: 'GET' }).then(function (response) {
+// success callback
+var degree = this.getParameterByName("degree");
+this.$set('degrees', response.data)
+if (degree == "" || degree == null) {
+/*for (var i in response.data) {
+this.$data.selectedPrograms.push(response.data[i].Name)
+}*/
+} else {
+this.$data.selectedDegrees.push(degree);
+}
+}, function (response) {
+
+});
+},
+methods: {
+getParameterByName: function (name, url) {
+if (!url) url = window.location.href;
+name = name.replace(/[\[\]]/g, "\\$&");
+var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+results = regex.exec(url);
+if (!results) return null;
+if (!results[2]) return '';
+return decodeURIComponent(results[2].replace(/\+/g, " "));
+},
+goToResults: function () {
+$(".grid .grid-item:first-child a").focus();
+}
+},
+filters: {
+truncate: function (string, value) {
+//trim the string to the maximum length
+var trimmedString = string.substr(0, value);
+
+//re-trim if we are in the middle of a word
+trimmedString = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" ")))
+return trimmedString + '...';
+}
+}
+});
+};
+
+var majorQuickSearch = function () {
+new Vue({
+el: '#major-quick-search',
+data: function() {
+return {
+programs: null,
+program: null,
+search: "",
+url: majorToolUrl,
+}
+},
+events: {
+'autocomplete:selected': function (name, data) {
+window.location = this.url + '/detail/' + data.Id;
+},
+'autocomplete:showAll': function (name, term) {
+window.location = this.url + "?search=" + term + "&showAll=true";
+}
+},
+ready: function () {
+
+this.$http({ url: '/api/majors/getallprograms/session/2a3inymzsrzcxb4hiu2ruplf' + sessionId, method: 'GET' }).then(function (response) {
+// success callback
+this.$set('programs', response.data)
+}, function (response) {
+
+});
+},
+methods: {
+searchGo: function(){
+if (this.search != "" || this.program != null)
+{
+window.location = this.url + "?search=" + this.search + "&program=" + this.program
+}
+}
+}
+});
+};
+
+var studentDropdown = function () {
+$("#student-type-change").change(function () {
+var route = $("#student-type-change").val();
+if(route != "") {
+window.location = route;
+}
+});
+};
+
+var resizeHeader = function () {
+var $window = $(window);
+var targetWidth = 'auto';
+if ($window.width() > 974) {
+targetWidth = $('#appmenu').width() - parseInt($('body').css('fontSize').replace(/[^-\d\.]/g, '')) - 4 + 'px';
+}
+
+$('.header-left').width(targetWidth);
+$('.header-right').css('marginLeft', targetWidth);
+};
+
+var stackTables = function () {
+$('.primary table').stacktable();
+};
+
+var popovers = function () {
+$('[data-toggle="popover"]').each(function () {
+$(this).attr('tabindex', 0).attr('data-placement', 'auto');
+
+})
+$('[data-toggle="popover"]').popover({ trigger: is_touch_device ? 'hover' : 'focus' });
+};
+
+var landingPageImages = function () {
+$('.landing .col-md-5, .feed').find('img').each(function () {
+var imgClass = (this.width / this.height > 1) ? 'wide' : 'tall';
+$(this).addClass(imgClass);
+})
+};
+
+var fitvids = function () {
+$(".container").fitVids();
+};
+
+var showhideFooter = function () {
+if ($(window).height() < 210) {
+$footer.css({
+position: "relative"
+});
+} else {
+$footer.css({
+position: "fixed"
+});
+}
+};
+
+
+return {
+init: init,
+searchInit: searchInit,
+mobileNavigation: mobileNavigation,
+desktopNavigation: desktopNavigation,
+majorsTool: majorsTool,
+studentDropdown: studentDropdown,
+majorQuickSearch: majorQuickSearch,
+stackTables: stackTables,
+popovers: popovers,
+landingPageImages: landingPageImages,
+fitvids: fitvids,
+showhideFooter: showhideFooter
+};
+
+})();
+(function () {
+
+ua.init();
+
+var jRes = jRespond([
+{
+label: 'mobile',
+enter: 0,
+exit: 767
+}, {
+label: 'tablet',
+enter: 768,
+exit: 899
+}, {
+label: 'desktop',
+enter: 900,
+exit: 10000
+}
+]);
+
+// register enter and exit functions for a single breakpoint
+jRes.addFunc([
+{
+breakpoint: 'mobile',
+enter: function () {
+ua.mobileNavigation();
+ua.landingPageImages();
+},
+exit: function () {
+}
+}, {
+breakpoint: ['tablet', 'desktop'],
+enter: function () {
+ua.desktopNavigation();
+ua.landingPageImages();
+},
+exit: function () {
+}
+}
+]);
+
+// Global init
+ua.searchInit();
+if ($('#majorsTool').length == 0) {
+ua.stackTables();
+}
+ua.popovers();
+if ($('#majorsTool').length) {
+ua.majorsTool();
+}
+if ($('#major-quick-search').length) {
+ua.majorQuickSearch();
+}
+ua.studentDropdown();
+ua.fitvids();
+ua.showhideFooter();
+
+$(window).scroll(ua.showhideFooter).resize(ua.showhideFooter);
+
+})(this);
+(function(a){a.fn.buckeyeAlert=function(e){var s=a.extend({url:"//www.osu.edu/feeds/emergency-alert.rss",callback:function(){},messageClass:null,animate:true},e);return this.each(function(){var r=a(this);r.attr("aria-live","polite");a.get(s.url,function(e){var t=a(e).find("item");if(t.length){var n=a('<div id="buckeye_alert_msg"></div>').addClass(s.messageClass);t.each(function(){n.append(a(this).find("description").text())});r.removeAttr("hidden").prepend(n).prepend('<h2 class="osu-semantic">Emergency alert message</h2>');if(s.animate){r.slideDown("fast")}else{r.show()}s.callback()}})})}})(jQuery);(function(l){if(!l.support.cors&&l.ajaxTransport&&window.XDomainRequest){var t=/^https?:\/\//i;var s=/^get|post$/i;var a=new RegExp("^"+location.protocol,"i");var u=/text\/html/i;var p=/\/json/i;var d=/\/xml/i;l.ajaxTransport("+*",function(n,r,e){if(n.crossDomain&&n.async&&s.test(n.type)&&t.test(n.url)&&a.test(n.url)){var i=null;var c=(r.dataType||"").toLowerCase();return{send:function(e,o){i=new XDomainRequest;if(/^\d+$/.test(r.timeout)){i.timeout=r.timeout}i.ontimeout=function(){o(500,"timeout")};i.onload=function(){var e="Content-Length: "+i.responseText.length+"\r\nContent-Type: "+i.contentType;var t={code:200,message:"success"};var n={text:i.responseText};try{if(c==="html"||u.test(i.contentType)){n.html=i.responseText}else if(c==="json"||c!=="text"&&p.test(i.contentType)){try{n.json=l.parseJSON(i.responseText)}catch(s){t.code=500;t.message="parseerror"}}else if(c==="xml"||c!=="text"&&d.test(i.contentType)){var r=new ActiveXObject("Microsoft.XMLDOM");r.async=false;try{r.loadXML(i.responseText)}catch(s){r=undefined}if(!r||!r.documentElement||r.getElementsByTagName("parsererror").length){t.code=500;t.message="parseerror";throw"Invalid XML: "+i.responseText}n.xml=r}}catch(a){throw a}finally{o(t.code,t.message,n,e)}};i.onprogress=function(){};i.onerror=function(){o(500,"error",{text:i.responseText})};var t="";if(r.data){t=l.type(r.data)==="string"?r.data:l.param(r.data)}i.open(n.type,n.url);i.send(t)},abort:function(){if(i){i.abort()}}}}})}})(jQuery);
+(function (a) { a.fn.osasAlert = function (e) { var s = a.extend({ url:"//uafye-dev-undergradadmissions.esue.ohio-state.edu/public/feeds/feed.rss",callback:function(){},messageClass:null,animate:true},e);return this.each(function(){var r=a(this);r.attr("aria-live","polite");a.get(s.url,function(e){var t=a(e).find("item");if(t.length){var n=a('<div id="osas_alert_msg"></div>').addClass(s.messageClass);t.each(function(){n.append(a(this).find("description").text())});r.removeAttr("hidden").prepend(n).prepend('<h2 class="osu-semantic">Emergency alert message</h2>');if(s.animate){r.slideDown("fast")}else{r.show()}s.callback()}})})}})(jQuery);(function(l){if(!l.support.cors&&l.ajaxTransport&&window.XDomainRequest){var t=/^https?:\/\//i;var s=/^get|post$/i;var a=new RegExp("^"+location.protocol,"i");var u=/text\/html/i;var p=/\/json/i;var d=/\/xml/i;l.ajaxTransport("+*",function(n,r,e){if(n.crossDomain&&n.async&&s.test(n.type)&&t.test(n.url)&&a.test(n.url)){var i=null;var c=(r.dataType||"").toLowerCase();return{send:function(e,o){i=new XDomainRequest;if(/^\d+$/.test(r.timeout)){i.timeout=r.timeout}i.ontimeout=function(){o(500,"timeout")};i.onload=function(){var e="Content-Length: "+i.responseText.length+"\r\nContent-Type: "+i.contentType;var t={code:200,message:"success"};var n={text:i.responseText};try{if(c==="html"||u.test(i.contentType)){n.html=i.responseText}else if(c==="json"||c!=="text"&&p.test(i.contentType)){try{n.json=l.parseJSON(i.responseText)}catch(s){t.code=500;t.message="parseerror"}}else if(c==="xml"||c!=="text"&&d.test(i.contentType)){var r=new ActiveXObject("Microsoft.XMLDOM");r.async=false;try{r.loadXML(i.responseText)}catch(s){r=undefined}if(!r||!r.documentElement||r.getElementsByTagName("parsererror").length){t.code=500;t.message="parseerror";throw"Invalid XML: "+i.responseText}n.xml=r}}catch(a){throw a}finally{o(t.code,t.message,n,e)}};i.onprogress=function(){};i.onerror=function(){o(500,"error",{text:i.responseText})};var t="";if(r.data){t=l.type(r.data)==="string"?r.data:l.param(r.data)}i.open(n.type,n.url);i.send(t)},abort:function(){if(i){i.abort()}}}}})}})(jQuery);
